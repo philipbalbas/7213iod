@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "budo client/index.js --live"
+    "start": "budo client/index.js:bundle.js --live"
   },
   "keywords": [],
   "author": "David Guttman <david@guttman.io> (http://davidguttman.com/)",
@@ -18,8 +18,6 @@
     "tachyons": "^4.9.1"
   },
   "browserify": {
-    "transform": [
-      "sheetify"
-    ]
+    "transform": ["sheetify"]
   }
 }
