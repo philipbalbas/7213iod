@@ -13,10 +13,10 @@ app.use((state, emitter) => {
     hostname: '',
     pathname: '',
     queries: '',
-    params: {},
-    error: ''
+    params: {}
   }
 
+  state.tempParam = {}
   state.error = ''
 
   emitter.on('editUrl', text => {
@@ -69,20 +69,41 @@ app.use((state, emitter) => {
     state.url.original = `${protocol}${hostname}${text}${queries}`
   })
 
-  // emitter.on('editParams')
+  emitter.on('editParam', (key, value, index) => {
+    const updatedParams = state.url.params.map((item, i) => {
+      if (i === index) {
+        return { [key]: value }
+      }
+      return item
+    })
 
-  emitter.on('deleteParam', param => {
-    const [key, value] = Object.entries(param)[0]
-    const newParams = state.url.params.filter(
-      item => Object.entries(item)[0][0] !== key
-    )
-    const newQueries = newParams
+    const updatedQueries = updatedParams
       .map(item => Object.entries(item)[0])
       .map(item => item.join('='))
       .join('&')
 
-    state.url.params = newParams
-    state.url.queries = newQueries
+    state.url.params = updatedParams
+    state.url.queries = updatedQueries
+
+    state.url.original = `${state.url.protocol}${state.url.hostname}${
+      state.url.pathname
+    }?${state.url.queries}`
+
+    emitter.emit('render')
+  })
+
+  emitter.on('deleteParam', param => {
+    const [key, value] = Object.entries(param)[0]
+    const updatedParams = state.url.params.filter(
+      item => Object.entries(item)[0][0] !== key
+    )
+    const updatedQueries = updatedParams
+      .map(item => Object.entries(item)[0])
+      .map(item => item.join('='))
+      .join('&')
+
+    state.url.params = updatedParams
+    state.url.queries = updatedQueries
 
     state.url.original = `${state.url.protocol}${state.url.hostname}${
       state.url.pathname
@@ -99,6 +120,36 @@ app.use((state, emitter) => {
       state.error = ''
       emitter.emit('render')
     }
+  })
+
+  emitter.on('addTempKey', key => {
+    state.tempParam.key = key
+  })
+
+  emitter.on('addTempValue', value => {
+    state.tempParam.value = value
+  })
+
+  emitter.on('addParam', () => {
+    const newParam = {
+      [state.tempParam.key]: state.tempParam.value
+    }
+
+    const updatedParams = [...state.url.params, newParam]
+
+    const updatedQueries = updatedParams
+      .map(item => Object.entries(item)[0])
+      .map(item => item.join('='))
+      .join('&')
+
+    state.url.params = updatedParams
+    state.url.queries = updatedQueries
+
+    state.url.original = `${state.url.protocol}${state.url.hostname}${
+      state.url.pathname
+    }?${state.url.queries}`
+
+    emitter.emit('render')
   })
 })
 
@@ -156,32 +207,55 @@ const main = (state, emit) => {
       <label>Pathname</label>
       <input type="text" value=${state.url.pathname} oninput=${editPathname} />
     </div>
+    ${
+      !state.error.length && state.url.original.length
+        ? html`
     <table>
-      <thead>
-        <tr>
-          <td>Key</td>
-          <td>Value</td>
-        </tr>
-      </thead>
-      <tbody>
-      ${state.url.params.length &&
-        state.url.params.map(item => {
-          const [key, value] = Object.entries(item)[0]
-          return html`
-            <tr>
-              <td>
-                <input type=text value=${key} />
-              </td>
-              <td>
-                <input type=text value=${value}/>
-              </td>
-              <td><button onclick=${() =>
-                deleteParam(item)}>Delete</button></td>
-            </tr>
-            `
-        })}
-      </tbody>
-    </table>
+    <thead>
+      <tr>
+        <td>Key</td>
+        <td>Value</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <input type="text" oninput=${e =>
+            emit('addTempKey', e.target.value)} />            
+        </td>
+        <td>
+          <input type="text" oninput=${e =>
+            emit('addTempValue', e.target.value)} />
+        </td>
+        <td>
+          <button onclick=${() => emit('addParam')}>Add Param</button>
+        </td>
+      </tr>
+    ${
+      state.url.params.length
+        ? state.url.params.map((item, index) => {
+            const [key, value] = Object.entries(item)[0]
+            return html`
+          <tr>
+            <td>
+              <input type=text value=${key} oninput=${e =>
+              editParam(e.target.value, value, index)} />
+            </td>
+            <td>
+              <input type=text value=${value} oninput=${e =>
+              editParam(key, e.target.value, index)} />
+            </td>
+            <td><button onclick=${() => deleteParam(item)}>Delete</button></td>
+          </tr>
+          `
+          })
+        : ''
+    }
+    </tbody>
+  </table>
+    `
+        : ''
+    }
   </div>`
 
   function edit(e) {
@@ -199,8 +273,12 @@ const main = (state, emit) => {
     emit('testUrl', state.url.original)
   }
 
-  function deleteParam(item) {
-    emit('deleteParam', item)
+  function deleteParam(param) {
+    emit('deleteParam', param)
+  }
+
+  function editParam(key, value, index) {
+    emit('editParam', key, value, index)
   }
 
   function editPathname(e) {
