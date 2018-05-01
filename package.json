@@ -1,0 +1,25 @@
+{
+  "name": "challenge-url",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "budo client/index.js --live"
+  },
+  "keywords": [],
+  "author": "David Guttman <david@guttman.io> (http://davidguttman.com/)",
+  "license": "MIT",
+  "devDependencies": {
+    "budo": "^11.2.0"
+  },
+  "dependencies": {
+    "choo": "^6.11.0-preview1",
+    "sheetify": "^7.3.2",
+    "tachyons": "^4.9.1"
+  },
+  "browserify": {
+    "transform": [
+      "sheetify"
+    ]
+  }
+}
