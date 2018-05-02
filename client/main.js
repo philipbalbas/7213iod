@@ -1,17 +1,8 @@
-const choo = require('choo')
-const css = require('sheetify')
 const html = require('choo/html')
+const css = require('sheetify')
 
 const inputGroup = require('./inputGroup')
 const paramTable = require('./paramTable')
-
-const app = choo()
-
-css('tachyons')
-
-app.use(require('./store'))
-
-const color = '#f0f0f0'
 
 const container = css`
   :host {
@@ -33,15 +24,6 @@ const container = css`
       'main main'
       'error error'
       'group table';
-  }
-
-  @media screen and (min-width: 1225px) {
-    grid-template-areas:
-      'title'
-      'main'
-      'error'
-      'group'
-      'table';
   }
 `
 const title = css`
@@ -76,7 +58,7 @@ const error = css`
 
 const main = (state, emit) => {
   return html`
-    <div class=${`${container} yellow bg-dark-blue`}>
+    <body class=${`${container} yellow bg-dark-blue`}>
       <div class="box bg-navy">
         <h2 class=${`${title} fs-normal fw6 sans-serif`}>URL Editor</h2>
         <input 
@@ -93,7 +75,7 @@ const main = (state, emit) => {
             : ''
         }
       </div>
-    </div>`
+    </body>`
 
   function edit(e) {
     emit('testUrl', e.target.value)
@@ -101,6 +83,4 @@ const main = (state, emit) => {
   }
 }
 
-app.route('/', main)
-
-app.mount('div')
+module.exports = main

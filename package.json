@@ -2,14 +2,16 @@
   "name": "challenge-url",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "client/index.js",
   "scripts": {
-    "start": "budo client/index.js:bundle.js --live"
+    "start": "bankai start",
+    "build": "bankai build"
   },
   "keywords": [],
   "author": "David Guttman <david@guttman.io> (http://davidguttman.com/)",
   "license": "MIT",
   "devDependencies": {
+    "bankai": "^9.11.1",
     "budo": "^11.2.0"
   },
   "dependencies": {
