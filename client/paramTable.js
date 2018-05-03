@@ -4,27 +4,6 @@ const css = require('sheetify')
 const styles = require('./styles')
 const strike = require('./strike')
 
-const tableContainerStyle = css`
-  :host {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    overflow: auto;
-    margin: 5px;
-  }
-
-  :host > table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  :host > label {
-    font-weight: bold;
-    font-size: 120%;
-    margin: 10px;
-  }
-`
-
 const paramTable = (url, emit) => {
   return html`
     <div>
