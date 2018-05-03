@@ -158,7 +158,7 @@ const store = (state, emitter) => {
 
       state.url.params = updatedParams
       state.url.queries = updatedQueries
-      state.tempParam = {}
+      state.tempParam = { key: '', value: '' }
 
       state.url.original = `${state.url.protocol}${state.url.hostname}${
         state.url.pathname

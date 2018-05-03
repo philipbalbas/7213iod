@@ -11,7 +11,7 @@
   "author": "David Guttman <david@guttman.io> (http://davidguttman.com/)",
   "license": "MIT",
   "devDependencies": {
-    "bankai": "^9.11.1",
+    "bankai": "^9.11.2",
     "budo": "^11.2.0"
   },
   "dependencies": {
